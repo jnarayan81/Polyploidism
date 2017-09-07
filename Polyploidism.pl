@@ -75,10 +75,10 @@ GetOptions(
 	'verbose' 		=> \$verbose,
     	'logfile=s' 		=> \$logfile,		## logfile
 	
-) or die polySubs::ManualHelp();
+) or die polySubs::EBAWelcome($VERSION);
 
-if ($random) { if ((!$infile) or (!$outfile) or (!$length) or(!$count) or (!$expected) or (!$thread) or $zip) { polySubs::printUsage(); exit; }}
-if ($genes) { if ((!$infile) or (!$outfile) or (!$species) or (!$expected) or (!$thread) or $zip) { polySubs::printUsage(); exit; }}
+if ($random) { if ((!$infile) or (!$outfile) or (!$length) or(!$count) or (!$expected) or (!$thread) or (!$zip)) { polySubs::printUsage(); exit; }}
+if ($genes) { if ((!$infile) or (!$outfile) or (!$species) or (!$expected) or (!$thread) or (!$zip)) { polySubs::printUsage(); exit; }}
 
 #Check if allready running same script anywhere.
 flock(DATA,LOCK_EX|LOCK_NB)
@@ -322,18 +322,17 @@ print $OF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\n" i
 open FILE, $infile;
    while (<FILE>) {
     	chomp $_;
-
-    	my $line = polySubs::trim ($_); print "$line\n";
+    	my $line = polySubs::trim ($_);
 	next if $. == 1; #Ignore header
 	next if ($line =~ /^\s*$/);
     	my @values = split('\t', $_);
     	if ($values[1] <= $zip) { 
-		my $newVal = $values[1]+1;
+		my $newVal = $values[1]+1; #added as it one less in old file
 		print $OF "$values[0]\t$newVal\t$values[2]\t$values[3]\t$values[4]\t$values[5]\t$values[6]\t$values[7]\t$values[8]\n";
 		}
 	}
    close FILE;
-close $OF;
+   close $OF;
 }
 
 __END__

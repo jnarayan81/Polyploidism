@@ -119,6 +119,8 @@ Mandatory parameters: -g (gene based)
 
   -i <num> 		Identify percentage for lastz.
 
+  -z <num> 		Max number of ploidy to plot.
+
   -s <species>		Trained species name for gene prediction
 
 
@@ -135,6 +137,8 @@ Mandatory parameters: -r (random based)
   -r			For randome sequence split
 
   -i <num> 		Identify percentage for lastz.
+
+  -z <num> 		Max number of ploidy to plot.
 
   -c <count> 		Number of string.
 
