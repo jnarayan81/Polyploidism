@@ -24,6 +24,11 @@ Citation - automated estimation of polyploidy nature of the genome
 License: Creative Commons Licence
 Bug-reports and requests to: jitendra.narayanATunamur.be and nicolas.debortoliATunamur.be
 
+Keep an eye at: 
+#Set up the path of all required tools - stored in the same folder
+$ENV{'PATH'} = "/bin:/usr/bin:/usr/bin/env:$ENV{PWD}/augustus.2.5.5/bin: $ENV{PWD}/augustus.2.5.5/config: $ENV{PWD}/lastz-distrib-1.03.73/src: $ENV{PWD}/KaKs_Calculator2.0/bin/Linux: $ENV{PWD}/muscle: $ENV{PWD}/dotter: $ENV{PWD}/trf";
+
+
 FOR GENE try: perl Polyploidism.pl -f xaa.fa -o TESTOUT3 -s elegans -e 4 -g -i 90 -t 7
 
 -------------------------------------------------------------------
@@ -39,6 +44,7 @@ my (
 	$expected,
 	$genes,
 	$thread,
+	$zip,
 	$identity,
 	$logfile,
 );
@@ -63,6 +69,7 @@ GetOptions(
 	'random|r' 		=> \$random, 	## check random 
 	'genes|g' 		=> \$genes, 	## check random 
 	'thread|t=i' 		=> \$thread, 	## thread 
+	'zip|z=i' 		=> \$zip, 	## zip the ploidy to plot
     	'help|?|h!'     	=> sub { polySubs::EBAWelcome($VERSION) },
    	'who|w!'     		=> sub { polySubs::EBAWho($VERSION) },
 	'verbose' 		=> \$verbose,
@@ -70,8 +77,8 @@ GetOptions(
 	
 ) or die polySubs::ManualHelp();
 
-if ($random) { if ((!$infile) or (!$outfile) or (!$length) or(!$count) or (!$expected) or (!$thread)) { polySubs::printUsage(); exit; }}
-if ($genes) { if ((!$infile) or (!$outfile) or (!$species) or (!$expected) or (!$thread)) { polySubs::printUsage(); exit; }}
+if ($random) { if ((!$infile) or (!$outfile) or (!$length) or(!$count) or (!$expected) or (!$thread) or $zip) { polySubs::printUsage(); exit; }}
+if ($genes) { if ((!$infile) or (!$outfile) or (!$species) or (!$expected) or (!$thread) or $zip) { polySubs::printUsage(); exit; }}
 
 #Check if allready running same script anywhere.
 flock(DATA,LOCK_EX|LOCK_NB)
@@ -249,7 +256,7 @@ else { print "ERROR: What how this did happed !!"; exit(0);}
 		local $/ = "\n";  # read by lines
 		while (<$resF>) {
 			chomp;
-print "$_ -<>-\n";
+#print "$_ -<>-\n";
 			next if /^#/; #Ignore the header if available
 			my @values = split('\t', $_);
 			# Use conditions here to avoid false positive
@@ -299,8 +306,34 @@ polySubs::reformatNplot($outDIR, "$outDIR/$outfile", \%allIds);
 
 #Run the Rscript for Boxplot
 #polySubs::Mapper("$outDIR/$outfile.final");
-0 == system("Rscript ./Rscripts/RBoxplot.R $outDIR/$outfile.final $outDIR/boxPlotted.pdf") or die "Failed to Rscript the boxplot file\n";
+refFile($outDIR, "$outDIR/$outfile.final", "$outDIR/$outfile.final2", $zip);
+0 == system("Rscript ./Rscripts/RBoxplot.R $outDIR/plot.final2 $outDIR/boxPlotted.pdf") or die "Failed to Rscript the boxplot file\n";
 
 print "\nCongratulation plolyploidism estimation accomplished, Check your $outDIR/$outfile file for result !!!\n";
+
+
+sub refFile {
+my($outL, $infile,$outfile, $zip) = @_;
+my $plotF="$outL/plot.final2";
+
+open my $OF, '>', $plotF or die "Could not create: $!\n";;
+print $OF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\n" if (-z "$plotF");
+
+open FILE, $infile;
+   while (<FILE>) {
+    	chomp $_;
+
+    	my $line = polySubs::trim ($_); print "$line\n";
+	next if $. == 1; #Ignore header
+	next if ($line =~ /^\s*$/);
+    	my @values = split('\t', $_);
+    	if ($values[1] <= $zip) { 
+		my $newVal = $values[1]+1;
+		print $OF "$values[0]\t$newVal\t$values[2]\t$values[3]\t$values[4]\t$values[5]\t$values[6]\t$values[7]\t$values[8]\n";
+		}
+	}
+   close FILE;
+close $OF;
+}
 
 __END__

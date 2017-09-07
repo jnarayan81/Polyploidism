@@ -469,6 +469,7 @@ print $outF "$bestPloidy\n";
 close $outF;
 }
 
+
 sub reverse_complement_IUPAC {
         my $dna = shift;
 
