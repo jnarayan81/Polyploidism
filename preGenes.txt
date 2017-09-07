@@ -1,0 +1,31 @@
+# This output was generated with AUGUSTUS (version 2.5.5).
+# AUGUSTUS is a gene prediction tool for eukaryotes written by Mario Stanke (mario.stanke@uni-greifswald.de)
+# and Oliver Keller (keller@cs.uni-goettingen.de).
+# Please cite: Mario Stanke, Mark Diekhans, Robert Baertsch, David Haussler (2008),
+# Using native and syntenically mapped cDNA alignments to improve de novo gene finding
+# Bioinformatics 24: 637-644, doi 10.1093/bioinformatics/btn013
+# No extrinsic information on sequences given.
+# Initialising the parameters ...
+# elegans version. Use default transition matrix.
+# Looks like /tmp/B7s1UWlo8x is in fasta format.
+# We have hints for 0 sequences and for 0 of the sequences in the input set.
+#
+# ----- prediction on sequence number 1 (length = 2340, name = seq1) -----
+#
+# Constraints/Hints:
+# (none)
+# Predicted genes for sequence number 1 on both strands
+# start gene g1
+seq1	AUGUSTUS	gene	1	2340	0.08	+	.	g1
+seq1	AUGUSTUS	transcript	1	2340	0.08	+	.	g1.t1
+seq1	AUGUSTUS	CDS	483	692	0.39	+	2	transcript_id "g1.t1"; gene_id "g1";
+seq1	AUGUSTUS	CDS	933	1966	0.31	+	2	transcript_id "g1.t1"; gene_id "g1";
+# protein sequence = [NGYFGISTEKAYRDLLKDKKPKQNIIVAVIDGGVDINHPDLKNVLWTNTKEIPGNGIDDDGNGYIDDIHVAKINNKEM
+# PTLADIDQYKADDETEEQVKAIIRKGAKEDGSFDKFYKSIKEGYKQYDAMLKYNLNPKYDMRAELVGDDYSNANQRNYGNNDVKGPDAFHGTHVSGII
+# GADRANSLGILGVANGVSIMAIRVVPTGDERDKDVANGIRYAVDNGAKVINMSFGKSYKWDKKAVDEAVKYAETKGVLLVHAAGNDNQDNDIEENYPN
+# KFFESKEAEVYKEAHKKPATPDFTPPKPNTQNAGMGMRPAYSRTPIVKAIPVDTAKFNLPHATNWIEVGASAYKDDDNLKADFSNYGKYNVDVFAPGF
+# LIKSTVPDNKYEEADGTSMASPVVAGLAGLILSYYPELKPAQ]
+# end gene g1
+###
+# command line:
+# augustus --species=elegans /tmp/B7s1UWlo8x --outfile=preGenes.txt --AUGUSTUS_CONFIG_PATH=/home/jitendra/Downloads/MyTool/Polyploidism/augustus.2.5.5/config
