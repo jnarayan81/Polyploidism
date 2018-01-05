@@ -1,0 +1,6 @@
+Name	Ploidy	Hits	Count	Seq	GC	GC_per	non_ATGC	Percentage	Length
+scaffold_1_1087316	1	2	2	scaffold_1_1087316	9240	31.9	44	100	9240
+seq0	2	1	2	seq0	1681	38.1	0	50
+seq0	3	1	2	seq0	1681	38.1	0	50	1681
+seq1	1	1	2	seq1	2340	37.8	0	50
+seq1	2	1	2	seq1	2340	37.8	0	50	2340

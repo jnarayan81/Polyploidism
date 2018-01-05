@@ -446,7 +446,7 @@ my %ids=%$hash_ref; my @lines;
 my $plotFile="$file.final";
 
 open my $outF, '>', $plotFile or die "Could not create: $!\n";;
-print $outF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\n" if (-z "$plotFile");
+print $outF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\tLength\n" if (-z "$plotFile");
 foreach my $key (keys %ids) {
 $/ = "\n";  # read by \n
 open FILE, $file;

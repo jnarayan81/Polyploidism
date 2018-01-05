@@ -137,7 +137,7 @@ system ("makeblastdb -in $infile -parse_seqids -dbtype nucl -out localDATA");
 local $/ = "\n>";  # read by FASTA record
 open my $infh,  '<', $infile;
 open my $outfh, '>>', "$outDIR/$outfile";
-print $outfh "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\n";
+print $outfh "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\tLength\n";
 #my $infh  = \*DATA;
 #my $outfh = \*STDOUT;
 
@@ -294,7 +294,7 @@ else { print "ERROR: What how this did happed !!"; exit(0);}
 	print $outfh "$id\t$prev\t$ct\t$count\t$baseStats\t" if $ct;
 
 my $per= $ct*100/$count;
-print $outfh "$per\n";
+print $outfh "$per\t$len\n";
 
 polySubs::deldir("$arc_dir");
 }
@@ -310,6 +310,7 @@ polySubs::reformatNplot($outDIR, "$outDIR/$outfile", \%allIds);
 refFile($outDIR, "$outDIR/$outfile.final", "$outDIR/$outfile.final2", $zip);
 0 == system("Rscript ./Rscripts/RBoxplot.R $outDIR/plot.final2 $outDIR/boxPlotted.pdf") or die "Failed to Rscript the boxplot file\n";
 
+0 == system("Rscript ./Rscripts/marginShinyPlot.R $outDIR/plot.final2") or die "Failed to Rscript the boxplot file\n";
 print "\nCongratulation plolyploidism estimation accomplished, Check your $outDIR/$outfile file for result !!!\n";
 
 
@@ -318,7 +319,7 @@ my($outL, $infile,$outfile, $zip) = @_;
 my $plotF="$outL/plot.final2";
 
 open my $OF, '>', $plotF or die "Could not create: $!\n";;
-print $OF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\n" if (-z "$plotF");
+print $OF "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\tLength\n" if (-z "$plotF");
 
 open FILE, $infile;
    while (<FILE>) {
@@ -329,7 +330,7 @@ open FILE, $infile;
     	my @values = split('\t', $_);
     	if ($values[1] <= $zip) { 
 		my $newVal = $values[1]+1; #added as it one less in old file
-		print $OF "$values[0]\t$newVal\t$values[2]\t$values[3]\t$values[4]\t$values[5]\t$values[6]\t$values[7]\t$values[8]\n";
+		print $OF "$values[0]\t$newVal\t$values[2]\t$values[3]\t$values[4]\t$values[5]\t$values[6]\t$values[7]\t$values[8]\t$values[9]\n";
 		}
 	}
    close FILE;
