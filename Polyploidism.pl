@@ -10,6 +10,7 @@ use Getopt::Long;
 use File::Remove 'remove';
 use File::Path qw(make_path remove_tree);
 use Fcntl qw( LOCK_EX LOCK_NB );
+use Bio::SeqIO;
 
 #USAGE:perl Polyploidism.pl -i sampleSeq.fa -o TESTOUT2 -s 100 -c 5
 
@@ -134,20 +135,17 @@ system ("makeblastdb -in $infile -parse_seqids -dbtype nucl -out localDATA");
 #Replace the unusual character(|) from fasta file header, if any
 #system (perl -pi -e 's/\|/_/g' $infile");
 
-local $/ = "\n>";  # read by FASTA record
-open my $infh,  '<', $infile;
+#local $/ = "\n>";  # read by FASTA record
+#open my $infh,  '<', $infile;
 open my $outfh, '>>', "$outDIR/$outfile";
 print $outfh "Name\tPloidy\tHits\tCount\tSeq\tGC\tGC_per\tnon_ATGC\tPercentage\tLength\n";
 #my $infh  = \*DATA;
 #my $outfh = \*STDOUT;
+my $seqio = Bio::SeqIO->new(-file => "$infile", '-format' => 'Fasta');
 
-while (<$infh>) {
-    	chomp;
-    	my $seq = $_;
-    	next if /^\s*$/;
-    	my ($id) = $seq =~ /^>*(\S+)/;  # parse ID as first word in FASTA header
-        $seq =~ s/^>*.+\n//;  # remove FASTA header
-        $seq =~ s/\n//g;  # remove endlines
+while(my $string = $seqio->next_seq) {
+    	my $seq = $string->seq;
+	my $id = $string->display_id;
 	my $len=length($seq);
 	polySubs::printLines(50, '-');
 	print "Working on $id ->>\n\n";
@@ -284,7 +282,7 @@ else { print "ERROR: What how this did happed !!"; exit(0);}
         		if($ct) {
             		print $outfh "$id\t$prev\t$ct\t$count\t$baseStats\t";
 			my $per= $ct*100/$count;
-			print $outfh "$per\n";
+			print $outfh "$per\t$len\n";
         		}
         	$prev=$_;
         	$ct=0;
@@ -329,7 +327,7 @@ open FILE, $infile;
 	next if ($line =~ /^\s*$/);
     	my @values = split('\t', $_);
     	if ($values[1] <= $zip) { 
-		my $newVal = $values[1]+1; #added as it one less in old file
+		my $newVal = $values[1]+0; #added as it one less in old file
 		print $OF "$values[0]\t$newVal\t$values[2]\t$values[3]\t$values[4]\t$values[5]\t$values[6]\t$values[7]\t$values[8]\t$values[9]\n";
 		}
 	}
