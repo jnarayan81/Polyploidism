@@ -31,7 +31,7 @@ $ENV{'PATH'} = "/bin:/usr/bin:/usr/bin/env:$ENV{PWD}/augustus.2.5.5/bin: $ENV{PW
 
 
 FOR GENE try: perl Polyploidism.pl -f xaa.fa -o TESTOUT3 -s elegans -e 4 -g -i 90 -t 7 -z 5
-FOR RANDOM: perl Polyploidism.pl -f sampleSeq.fa -o TESTOUT3 -s elegans -e 4 -r -i 90 -t 7 -l 500 -c 2 -z 5
+FOR RANDOM: perl Polyploidism.pl -f sampleSeq.fa -o TESTOUT3 -s elegans -q 50 -e 4 -r -i 70 -t 7 -l 500 -c 2 -z 5
 
 -------------------------------------------------------------------
 WELCOME
@@ -44,6 +44,7 @@ my (
 	$random,
 	$species,
 	$expected,
+	$qcov,
 	$genes,
 	$thread,
 	$zip,
@@ -53,7 +54,8 @@ my (
 
 # Default option setting for EBA tool
 my $VERSION=0.6;
-my $verbose=0; 		# Verbose set to 0;
+my $verbose=0; 	# Verbose set to 0;
+my $blastEval= '5e-5'; # -evalue $blastEval in blast line
 my %options = ();
 $length=0;
 $count=0;
@@ -66,6 +68,8 @@ GetOptions(
 	'length|l=i' 		=> \$length,		## Size of sub-string
     	'count|c=i' 		=> \$count, 		## Number of times 
 	'identity|i=i' 		=> \$identity, 		## identity percentage
+	'blastEval|b=i' 	=> \$blastEval, 	## blast evalues
+	'qcovl|q=i' 		=> \$qcov, 	## quesry coverage
 	'species|s=s' 		=> \$species, 		## Name of the trained species 
 	'expected|e=i' 		=> \$expected, 	## expected polyploidy
 	'random|r' 		=> \$random, 	## check random 
@@ -177,7 +181,7 @@ if ($genes) {
 			print $tmpf ">$id-$gval[0]\n$seqstring\n";
 			#format=general- supress the header .. The name of outfile should be different
 			
-			my $myMEGAblast="blastn -task megablast -query $tmpf -db localDATA -evalue 5e-10 -num_threads $thread -outfmt '6 qseqid qstart qend sseqid sstart send evalue length frames qcovs' -out $gval[2]_sampleSeq.fa_$id.tmp";
+			my $myMEGAblast="blastn -task megablast -query $tmpf -db localDATA -perc_identity $identity -num_threads $thread -outfmt '6 qseqid qstart qend sseqid sstart send evalue length frames qcovs' -out $gval[2]_sampleSeq.fa_$id.tmp";
 
 			#my $myLASTZ="lastz $tmpf $infile --chain --output=$gval[2]_sampleSeq.fa_$id.tmp --format=general- --progress --ambiguous=iupac --strand=both --identity=$identity"; 
 
@@ -222,7 +226,7 @@ elsif ($random) {
 		
 		#format=general- supress the header
 
-		my $myMEGAblast="blastn -task megablast -query $tmp_fh -db localDATA -evalue 5e-10 -num_threads $thread -outfmt '6 qseqid qstart qend sseqid sstart send evalue length frames qcovs' -out $index-sampleSeq.fa_$id.tmp";
+		my $myMEGAblast="blastn -task megablast -query $tmp_fh -db localDATA -perc_identity $identity -num_threads $thread -outfmt '6 qseqid qstart qend sseqid sstart send evalue length frames qcovs' -out $index-sampleSeq.fa_$id.tmp";
 
 		#my $myLASTZ="lastz $tmp_fh $infile --chain --output=$index-sampleSeq.fa_$id.tmp --format=general- --progress --ambiguous=iupac --strand=both --identity=$identity";
         0 == system ("$myMEGAblast") or die "Failed to LastZ the $id-$pos sequence\n";
@@ -260,7 +264,7 @@ else { print "ERROR: What how this did happed !!"; exit(0);}
 			my @values = split('\t', $_);
 			# Use conditions here to avoid false positive
 			# Ignore the match is less than 50% of the size of query
-			if ($values[-1] >= 50) { $cnt++;}
+			if ($values[-1] >= $qcov) { $cnt++;}
 			#if (($values[10]-$values[9]) >= ($values[5]-$values[4])/2) { $cnt++; }
 			#$values[14] =~ s/\s*\d+%$//;
 			#if (($values[14]) >= 50.00) { $cnt++; } #If more than 50 percent covered
