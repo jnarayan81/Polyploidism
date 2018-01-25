@@ -219,6 +219,9 @@ elsif ($random) {
         	splice @pos, $min, $length + $index - $min;
 
         	my $substring = substr $seq, $pos, $length;
+		my $countN = () = $substring =~ /N|n/g;
+		my $substringLen=length $substring;
+		next if $countN >= ($substringLen/3); #If more than one third contain NN or nn ignore string
 
         	#print "$id-$pos - $substring\n";
 		my $tmp_fh = new File::Temp( UNLINK => 1 );
