@@ -307,6 +307,9 @@ polySubs::deldir("$arc_dir");
 }
 close $outfh;
 
+#Delete the local blast database files
+0 == system("rm -rf localDATA*") or die "Can not delete the files\n";
+
 #Plotting the graph
 my %allIds=polySubs::storeInHash("$outDIR/$outfile");
 #Print the result in friendly format
@@ -319,7 +322,6 @@ refFile($outDIR, "$outDIR/$outfile.final", "$outDIR/$outfile.final2", $zip);
 
 0 == system("Rscript $RealBin/Rscripts/marginShinyPlot.R $outDIR/plot.final2") or die "Failed to Rscript the boxplot file\n";
 print "\nCongratulation plolyploidism estimation accomplished, Check your $outDIR/$outfile file for result !!!\n";
-
 
 sub refFile {
 my($outL, $infile,$outfile, $zip) = @_;
